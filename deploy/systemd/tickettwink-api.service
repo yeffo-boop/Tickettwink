@@ -1,0 +1,26 @@
+[Unit]
+Description=Ticket Twink API (FastAPI + scheduler + Telegram webhook handler)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=tickettwink
+Group=tickettwink
+WorkingDirectory=/opt/tickettwink/backend
+EnvironmentFile=/opt/tickettwink/backend/.env
+ExecStart=/opt/tickettwink/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=5
+# A crashed process must not silently take the app down permanently.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/tickettwink/backend/data
+
+[Install]
+WantedBy=multi-user.target

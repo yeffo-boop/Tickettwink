@@ -1,0 +1,246 @@
+:root {
+  --pink: #ff5fa2;
+  --pink-dark: #d43f82;
+  --bg: #fff7fb;
+  --ink: #221722;
+  --muted: #79647a;
+  --card: #ffffff;
+  --green: #1a9c5c;
+  --amber: #b3790a;
+  --red: #c2372b;
+  --blue: #2a63c2;
+  color-scheme: light;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(90deg, var(--pink), var(--pink-dark));
+  color: white;
+}
+
+.nav-brand {
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-user {
+  opacity: 0.9;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--bg), #ffe3f0);
+}
+
+.login-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(212, 63, 130, 0.15);
+  max-width: 380px;
+}
+
+.logo {
+  font-size: 3rem;
+}
+
+.tagline {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  background: white;
+  border: 2px solid var(--pink);
+  color: var(--pink-dark);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #ffe9f2;
+}
+
+.btn-primary {
+  background: var(--pink);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--pink-dark);
+}
+
+.btn-danger {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hint-warning {
+  color: var(--amber);
+  font-size: 0.9rem;
+}
+
+.error-text {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.success-text {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(34, 23, 34, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.movie-night-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.1s ease;
+}
+
+.movie-night-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.badge-gray {
+  background: #ece7ec;
+  color: var(--muted);
+}
+.badge-blue {
+  background: #e2ecfc;
+  color: var(--blue);
+}
+.badge-green {
+  background: #e0f6ea;
+  color: var(--green);
+}
+.badge-amber {
+  background: #fdf1da;
+  color: var(--amber);
+}
+.badge-red {
+  background: #fbe3e1;
+  color: var(--red);
+}
+
+.ticket-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1e6ec;
+  flex-wrap: wrap;
+}
+
+.upload-form,
+.inline-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.inline-form input {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ddc7d4;
+}
+
+.admin-panel {
+  border: 2px dashed var(--pink);
+}
