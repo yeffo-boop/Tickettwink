@@ -46,9 +46,24 @@ no credential to "activate" real Venmo integration — see
 exists) and how reconciliation works instead.
 
 ### Optional: a real showtime provider
-Not implemented — see `app/providers/showtime/base.py` for what's needed to
-add one. Until then `SHOWTIME_PROVIDER=manual` is what runs even in live
-mode: an admin types in the cinema/time via `PUT /api/movie-nights/{id}/showtime`.
+Not implemented yet, but real options exist — this wasn't skipped because
+none exist, just because none was chosen/tested in the initial build:
+
+- **[AMC Developer Portal](https://developers.amctheatres.com/)** — free,
+  self-serve API key. AMC theaters only.
+- **[MovieGlu](https://developer.movieglu.com/)** — paid, self-serve API
+  key, broad multi-chain/multi-country coverage.
+- **[Fandango API](https://developer.fandango.com/)** (via Fabric/Origin
+  Nexus) — paid, requires sales approval, most comprehensive US coverage.
+- **[SerpApi Google Showtimes](https://serpapi.com/showtimes-results)** —
+  paid ($25/mo+), scrapes Google's aggregated results rather than any
+  single chain's own data.
+
+See `app/providers/showtime/base.py` for what's needed to wire one in.
+Until then (or for any theater outside whatever provider you pick),
+`SHOWTIME_PROVIDER=manual` is what runs even in live mode: an admin types
+in the cinema/time via `PUT /api/movie-nights/{id}/showtime`, which is free
+and works for any theater.
 
 ## Deployment
 

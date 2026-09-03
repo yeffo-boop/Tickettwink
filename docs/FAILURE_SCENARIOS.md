@@ -24,12 +24,16 @@ available in this environment) — the retry/backoff wrapper (`tenacity`) and
 breaker wiring were code-reviewed but not integration-tested live.
 
 ### Showtime API unavailable
-**Mechanism:** No real showtime provider exists to integrate against (see
-`app/providers/showtime/base.py` for why). The shipped `ManualShowtimeProvider`
+**Mechanism:** No real showtime provider is integrated *yet* — but real
+options do exist (AMC Developer Portal is free and self-serve; MovieGlu,
+Fandango, and SerpApi's Google Showtimes are paid). None were chosen/wired
+up in this build, so this note previously overstated the situation by
+implying no option exists at all — corrected here and in
+`app/providers/showtime/base.py`. The shipped `ManualShowtimeProvider`
 never makes a network call, so this failure mode can't occur with the
 current provider — `Showtime.is_stale` / `ShowtimeStatus.UNKNOWN` exist on
 the model precisely so a future real provider can flag "last known value,
-couldn't refresh" the same way TMDB does.
+couldn't refresh" the same way TMDB does, once one is wired in.
 **Code:** `app/providers/showtime/base.py`, `app/models/showtime.py`
 **Tested:** N/A until a real provider is implemented — documented, not
 fabricated.

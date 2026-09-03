@@ -75,12 +75,20 @@ and `app/telegram_bot/handlers.py::_get_or_create_user`.
   decision (ticket rejected, showtime changed, payment marked overpaid,
   Movie Night cancelled...) is recorded, queryable at `/api/admin/audit-log`.
 
-## What's deliberately NOT built (and why)
+## What's not built yet (and why)
 
-- **No real showtime-provider integration.** There is no standard public API
-  for third-party movie showtime lookup. `app/providers/showtime/base.py`
-  documents this and ships a manual provider; adding a real one later is a
-  new module + a factory branch, nothing else changes.
+- **No real showtime-provider integration — not yet, not "can't."** Real
+  options exist: [AMC Developer Portal](https://developers.amctheatres.com/)
+  (free, self-serve, AMC-only), [MovieGlu](https://developer.movieglu.com/)
+  (paid, broad multi-chain coverage), the
+  [Fandango API](https://developer.fandango.com/) (paid, sales-gated, most
+  comprehensive US coverage), or [SerpApi's Google Showtimes](https://serpapi.com/showtimes-results)
+  (paid, scrapes Google's aggregated results). None were wired up in the
+  initial build because no provider had been chosen and none had
+  credentials available to test against. `app/providers/showtime/base.py`
+  documents each option and ships a manual provider as the free, always-
+  available fallback; adding a real one is a new module + a factory branch,
+  nothing else changes. See `docs/FAILURE_SCENARIOS.md` for the tradeoffs.
 - **No automatic Venmo payment verification.** Venmo does not expose a
   public API for verifying incoming P2P payments. `app/providers/payment/base.py`
   documents this; reconciliation is a manual admin confirmation
