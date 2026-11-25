@@ -183,3 +183,16 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('provider_health')
     # ### end Alembic commands ###
+
+    # Postgres keeps enum types after their tables are dropped, so without
+    # this a downgrade followed by an upgrade fails with "type already exists".
+    for enum_name in (
+        'movie_night_status',
+        'notification_channel',
+        'notification_status',
+        'payment_status',
+        'showtime_status',
+        'ticket_status',
+        'user_role',
+    ):
+        sa.Enum(name=enum_name).drop(op.get_bind(), checkfirst=True)
