@@ -22,6 +22,8 @@ breaker's open/half-open/closed transitions are exercised by
 failure was **not** tested against the real API (no `TMDB_API_KEY`
 available in this environment) — the retry/backoff wrapper (`tenacity`) and
 breaker wiring were code-reviewed but not integration-tested live.
+`backend/tests/test_movie_night_service.py` covers create-while-down,
+the stale flag, and the later refresh with a fake provider.
 
 ### Showtime API unavailable
 **Mechanism:** No real showtime provider is integrated *yet* — but real
@@ -91,8 +93,13 @@ Movie Nights within 48h whose paid attendees have no `UPLOADED`/`VERIFIED`
 ticket and queues a reminder notification per person.
 **Code:** `app/scheduler/jobs.py`, `app/services/ticket_service.py::find_missing_tickets`
 **Tested:** Code-reviewed and exercised via `find_missing_tickets` logic
-against seeded data; not run against a live 48-hour clock (would require
-waiting or mocking time, out of scope for this pass).
+against seeded data; not run against a live 48-hour clock.
+`backend/tests/test_missing_tickets.py` covers `find_missing_tickets`,
+`mark_ticket_missing`, and the scheduler job itself (only paid users
+without a ticket, only Movie Nights within 48h and not cancelled).
+**Known gap:** the job sends a fresh reminder on every hourly run, so a
+person can get up to ~48 reminders for one Movie Night, and it does not
+call `mark_ticket_missing` despite its docstring.
 
 ### Partial payment
 **Mechanism:** `Payment.amount_received_cents` is cumulative across
@@ -121,7 +128,9 @@ listed at `GET /api/admin/notifications/dead-letter` with a one-click
 **Tested:** Live — sandbox users have no Telegram chat linked, so every
 queued notification exercises the "can't deliver" path; confirmed it lands
 in the dead-letter list with a clear `error_message`, and that requeue
-resets it to `PENDING`.
+resets it to `PENDING`. Retry, backoff, dead-lettering after max retries,
+and the no-recipient path are covered by
+`backend/tests/test_notification_service.py`.
 
 ### Changed showtime
 **Mechanism:** `movie_night_service.update_showtime` is the single place a
@@ -132,7 +141,8 @@ ticket holder.
 **Tested:** Live — set an initial showtime, then changed it; response
 showed `"status": "showtime_changed"`, and a `showtime_changed` notification
 was queued and (correctly) dead-lettered for the recipient-less sandbox
-user.
+user. `backend/tests/test_movie_night_service.py` checks one notification
+per distinct ticket holder and none on the first showtime.
 
 ### Cancelled Movie Night
 **Mechanism:** `movie_night_service.cancel_movie_night` cancels every
@@ -142,7 +152,8 @@ nothing was paid), records the reason, and notifies every ticket holder.
 **Tested:** Live — cancelled a Movie Night with an overpaid ($20 vs $15)
 payment attached; confirmed the ticket flipped to `CANCELLED`, the payment
 to `REFUND_DUE` (visible in the Admin Dashboard screenshot), and a
-cancellation notification was queued.
+cancellation notification was queued. Also covered by
+`backend/tests/test_movie_night_service.py`.
 
 ### Failed deployment
 **Mechanism:** `scripts/deploy.sh` runs dependency install → migrations →
@@ -153,10 +164,11 @@ already-running service.
 **Code:** `scripts/deploy.sh`, `deploy/systemd/tickettwink-api.service`
 (`Restart=on-failure` + `StartLimitBurst` so a crash-looping deploy doesn't
 hammer the box forever)
-**Tested:** Script logic reviewed; not run against a real systemd host in
-this environment (no systemd/root deploy target here) — this is a process
-control, not application code, and is documented rather than fabricated as
-"tested."
+**Tested:** Not run against a real systemd host. `backend/tests/test_deploy_scripts.py`
+runs the real `deploy.sh` and `migrate.sh` with pip/alembic/npm/sudo/curl
+stubbed out, and checks that a failure in any step before the restart
+never restarts the service, and that a failed health check exits 1 with
+the rollback hint.
 
 ### Failed migration
 **Mechanism:** `scripts/migrate.sh` runs `alembic upgrade head`; Alembic
@@ -170,4 +182,8 @@ PostgreSQL 16 instance from a clean schema; all 9 tables created
 successfully (`\dt` confirmed). Did not test an intentionally-broken
 migration in this pass, but the transactional/exit-code behavior is
 Alembic's own well-documented guarantee, not something this app
-reimplements.
+reimplements. CI now runs `alembic upgrade head`, `alembic check` and a
+full downgrade/upgrade round trip on PostgreSQL 16 for every PR. That
+round trip found that the initial migration's downgrade left the enum
+types behind, so re-upgrading failed with "type already exists"; the
+downgrade now drops them.

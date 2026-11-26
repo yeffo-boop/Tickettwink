@@ -7,16 +7,22 @@ from app import models  # noqa: F401 -- registers all models on Base.metadata
 
 
 @pytest_asyncio.fixture
-async def db_session() -> AsyncSession:
+async def session_factory() -> async_sessionmaker[AsyncSession]:
+    """A session factory bound to a fresh in-memory database. Use this when
+    the code under test opens its own sessions (e.g. scheduler jobs)."""
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    session_factory = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-    async with session_factory() as session:
-        yield session
+    yield async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 
     await engine.dispose()
+
+
+@pytest_asyncio.fixture
+async def db_session(session_factory) -> AsyncSession:
+    async with session_factory() as session:
+        yield session
 
 
 @pytest.fixture(autouse=True)

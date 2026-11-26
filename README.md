@@ -48,6 +48,17 @@ Open http://localhost:5173, click **Sandbox Sign-In** (the first person to
 sign in becomes an admin — see `docs/ARCHITECTURE.md#first-run`), and create
 a Movie Night.
 
+## Running the checks
+
+```bash
+cd backend && pytest -q && ruff check .   # Python 3.12; uses in-memory SQLite
+cd frontend && npm run lint && npm run build
+```
+
+CI (`.github/workflows/ci.yml`) runs these on every pull request, plus the
+Alembic migrations against PostgreSQL 16 (upgrade, `alembic check`, and a
+downgrade/upgrade round trip).
+
 ## Going live
 
 Sandbox mode swaps in real integrations once you provide credentials and set
